@@ -5,6 +5,7 @@ export const sendContactMessage = async (req: Request, res: Response) => {
   try {
     const { name, email, message } = req.body;
 
+    // Validation
     if (!name || !email || !message) {
       return res.status(400).json({
         success: false,
@@ -19,19 +20,24 @@ export const sendContactMessage = async (req: Request, res: Response) => {
         message: "Invalid email format",
       });
     }
-    
+
+    // 🚀 SMTP config (Render safe)
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true, // SSL
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        pass: process.env.EMAIL_PASS, // Gmail App Password
       },
+      connectionTimeout: 10000, // prevent infinite timeout
     });
 
     const mailOptions = {
-      from: email,
-      to: process.env.CONTACT_EMAIL || "your-email@gmail.com",
-      subject: `New Contact Form Message from ${name}`,
+      from: `"ThumbnailGen Contact" <${process.env.EMAIL_USER}>`,
+      to: process.env.CONTACT_EMAIL || "deepshikasingh110@gmail.com",
+      replyTo: email,
+      subject: `New Contact Message from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
       html: `
         <h3>New Contact Form Message</h3>
@@ -50,9 +56,10 @@ export const sendContactMessage = async (req: Request, res: Response) => {
     });
 
   } catch (error: any) {
+    console.error("Contact Email Error:", error);
     return res.status(500).json({
       success: false,
-      message: error.message || "Failed to send message",
+      message: "Email service failed. Check SMTP credentials.",
     });
   }
 };
