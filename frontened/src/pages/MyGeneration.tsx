@@ -33,9 +33,9 @@ const MyGeneration = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const data = await apiFetch("/thumbnail/my-generations");
-        
+
         if (data && data.success && Array.isArray(data.thumbnails)) {
           setItems(data.thumbnails);
         } else {
@@ -61,7 +61,7 @@ const MyGeneration = () => {
     try {
       setDeletingId(id);
       const response = await apiFetch(`/thumbnail/${id}`, { method: "DELETE" });
-      
+
       if (response.success) {
         setItems((prev) => prev.filter((item) => item._id !== id));
       }
@@ -74,10 +74,10 @@ const MyGeneration = () => {
 
   const handleDownload = async (imageData: string, title: string, id: string) => {
     try {
-      const filename = `${title || 'thumbnail'}-${id}.png`;
+      const filename = `${title || "thumbnail"}-${id}.png`;
 
-      if (imageData.startsWith('data:')) {
-        const link = document.createElement('a');
+      if (imageData.startsWith("data:")) {
+        const link = document.createElement("a");
         link.href = imageData;
         link.download = filename;
         document.body.appendChild(link);
@@ -87,7 +87,7 @@ const MyGeneration = () => {
         const response = await fetch(imageData);
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
         link.download = filename;
         document.body.appendChild(link);
@@ -153,7 +153,7 @@ const MyGeneration = () => {
             </div>
             <p className="text-xl font-medium">No thumbnails yet</p>
             <button
-              onClick={() => navigate('/generate')}
+              onClick={() => navigate("/generate")}
               className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               Generate Thumbnail
@@ -163,14 +163,17 @@ const MyGeneration = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((item) => {
               const imageUrl = item.image_url || item.imageUrl;
-              const isValidImage = imageUrl && (
-                imageUrl.startsWith('data:image') || 
-                imageUrl.startsWith('http')
-              );
+              const isValidImage =
+                imageUrl &&
+                (imageUrl.startsWith("data:image") ||
+                  imageUrl.startsWith("http"));
               const isDeleting = deletingId === item._id;
-              
+
               return (
-                <div key={item._id} className="relative rounded-xl overflow-hidden bg-white/5 border border-white/10">
+                <div
+                  key={item._id}
+                  className="relative rounded-xl overflow-hidden bg-white/5 border border-white/10"
+                >
                   <div className="aspect-video overflow-hidden bg-gray-900">
                     {isValidImage ? (
                       <img
@@ -192,7 +195,15 @@ const MyGeneration = () => {
                       </span>
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => handleDownload(imageUrl, item.title || 'thumbnail', item._id)}
+                          onClick={() => {
+                            if (imageUrl) {
+                              handleDownload(
+                                imageUrl,
+                                item.title || "thumbnail",
+                                item._id
+                              );
+                            }
+                          }}
                           className="p-1.5 rounded-lg bg-white/20 hover:bg-blue-600 transition-colors"
                           disabled={isDeleting}
                         >
