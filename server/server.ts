@@ -1,5 +1,6 @@
 import "./configs/env.ts";
-
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import type { Request, Response } from "express";
 import cors from "cors";
@@ -8,6 +9,7 @@ import connectDb from "./configs/db.ts";
 import AuthRouter from "./routes/AuthRoutes.ts";
 import thumbnailRoutes from "./routes/ThumbnailRoutes.ts";
 import contactRoutes from "./routes/ContactRoutes.ts";
+
 
 const startServer = async () => {
   await connectDb();

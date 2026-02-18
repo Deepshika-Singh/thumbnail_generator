@@ -20,6 +20,13 @@ export const sendContactMessage = async (req: Request, res: Response) => {
         message: "Invalid email format",
       });
     }
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error("Missing EMAIL_USER or EMAIL_PASS in environment variables");
+      return res.status(500).json({
+        success: false,
+        message: "Email service not configured properly.",
+      });
+    }
 
     // 🚀 SMTP config (Render safe)
     const transporter = nodemailer.createTransport({
@@ -30,6 +37,8 @@ export const sendContactMessage = async (req: Request, res: Response) => {
       },
       connectionTimeout: 10000, // prevent infinite timeout
     });
+
+    await transporter.verify();
 
     const mailOptions = {
       from: `"ThumbnailGen Contact" <${process.env.EMAIL_USER}>`,
